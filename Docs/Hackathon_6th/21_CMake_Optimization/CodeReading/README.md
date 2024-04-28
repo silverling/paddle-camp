@@ -1,4 +1,6 @@
-> 在编译多 CUDA 架构的 Paddle 的时候，如果 CUDA 架构数大于等于 6 个，则会出现链接错误，本文档主要解释梳理该错误的原因，以及可能的解决方法。
+> 在编译多 CUDA 架构的 Paddle 的时候，如果 CUDA 架构数超过 4 个，则会出现链接错误，本文档主要解释梳理该错误的原因，以及可能的解决方法。
+
+> 在分离 PHI 模块下的部分 kernels 后，可以成功编译 6 个 CUDA 架构（61 70 75 80 86 90）。详见：https://github.com/PaddlePaddle/Paddle/pull/63712
 
 <details close>
 <summary>报错信息</summary>
@@ -294,6 +296,40 @@ ill.c:4:(.text+0x7): relocation truncated to fit: R_X86_64_PC32 against symbol `
     - 移除无用代码
     - 移除无用头文件
 - 分模块构建
+    ```txt
+    paddle/phi            --> libphi.so
+    ├── CMakeLists.txt
+    ├── README.md
+    ├── api
+    ├── backends
+    ├── capi
+    ├── common
+    ├── config.h
+    ├── config.h.in
+    ├── core
+    ├── extension.h
+    ├── include
+    ├── infermeta
+    ├── tools
+    └──kernels
+        ├── autotune
+        ├── cpu
+        ├── custom
+        ├── funcs
+        ├── fusion
+        ├── gpu           --> libphi_kernel_gpu.so
+        ├── gpudnn
+        ├── impl
+        ├── kps
+        ├── legacy
+        ├── onednn
+        ├── primitive
+        ├── selected_rows
+        ├── sparse
+        ├── stride
+        ├── strings
+        └── xpu
+    ```
 
 ## 参考资源
 
